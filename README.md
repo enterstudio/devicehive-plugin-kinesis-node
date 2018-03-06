@@ -1,0 +1,1 @@
+# DeviceHive plugin for Firehose
