@@ -10,8 +10,8 @@ class FirehosePluginService extends PluginService {
     }
 
     afterStart() {
-        this._firehose = firehose.createProvider(this._firehoseConfig);
         super.afterStart();
+        this._firehose = firehose.createProvider(this._firehoseConfig);
     }
 
     handleCommand(command) {

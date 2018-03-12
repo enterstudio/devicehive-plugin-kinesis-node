@@ -6,9 +6,9 @@
   },
 
   "custom": {
-    "buffering": false,
-    "commandStreams": [],
-    "notificationStreams": [],
-    "commandUpdatesStreams": []
+    "buffering": true,
+    "commandStreams": "",
+    "notificationStreams": "",
+    "commandUpdatesStreams": ""
   }
 }
