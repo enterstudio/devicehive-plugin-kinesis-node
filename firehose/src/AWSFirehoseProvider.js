@@ -4,8 +4,6 @@ class AWSFirehoseProvider {
         this._config = JSON.parse(JSON.stringify(config));
         this._streamGroups = new Map();
 
-        console.log(this._config);
-
         if (Array.isArray(this._config.commandStreams)) {
             this.assignStreamsToCommands(this._config.commandStreams);
         }
@@ -39,8 +37,6 @@ class AWSFirehoseProvider {
     }
 
     put(data, streamName) {
-        console.log('Putting to', streamName);
-
         const record = {
             DeliveryStreamName: streamName,
             Record: {
