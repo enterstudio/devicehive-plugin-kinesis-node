@@ -1,0 +1,14 @@
+{
+  "aws": {
+    "region": "",
+    "accessKeyId": "",
+    "secretAccessKey": ""
+  },
+
+  "custom": {
+    "buffering": true,
+    "commandStreams": [],
+    "notificationStreams": [],
+    "commandUpdatesStreams": []
+  }
+}
