@@ -48,7 +48,7 @@ class AWSFirehoseBuffer extends EventEmitter {
                 DeliveryStreamName: streamName,
                 Records: records
             }, (err, response) => {
-                this.emit('putBatch', err, response);
+                this.emit('putBatch', err, response, streamName);
             });
 
             this._messagesByStream[streamName] = [];

@@ -61,7 +61,7 @@ class AWSFirehoseProvider {
                     resolve(response);
                 }
 
-                this._eventEmitter.emit('put', err, response);
+                this._eventEmitter.emit('put', err, response, streamName);
             });
         });
     }

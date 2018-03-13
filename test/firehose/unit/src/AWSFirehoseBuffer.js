@@ -25,6 +25,6 @@ describe('AWS Firehose Buffer', () => {
         firehoseRecordBuffer.put(data, 'test-stream');
 
         assert(firehoseRecordBuffer.emit.calledOnce);
-        assert(firehoseRecordBuffer.emit.calledWith('putBatch'));
+        assert(firehoseRecordBuffer.emit.calledWith('putBatch', null, {}, 'test-stream'));
     });
 });

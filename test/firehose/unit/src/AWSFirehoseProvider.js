@@ -93,7 +93,7 @@ describe('AWS Firehose Provider', () => {
 
         firehoseProvider.putCommand(data);
 
-        assert(callback.calledWith(null, {}));
+        assert(callback.calledWith(null, {}, 'test'));
     });
 
     it('Should buffer messages and put as batch by reaching specified size', () => {
