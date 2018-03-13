@@ -1,13 +1,14 @@
 const EventEmitter = require('events');
+const crc = require('crc');
 
-const Buffer = require('./AWSFirehoseBuffer');
+const DataStreamsBuffer = require('./AWSKinesisDataStreamsBuffer');
 
-class AWSFirehoseProvider {
-    constructor(awsFirehose, config) {
-        this._firehose = awsFirehose;
+class AWSKinesisDataStreamsProvider {
+    constructor(awsKinesisDataStreams, config) {
+        this._dataStreams = awsKinesisDataStreams;
         this._config = JSON.parse(JSON.stringify(config));
         this._streamGroups = new Map();
-        this._buffer = new Buffer(this._firehose, {
+        this._buffer = new DataStreamsBuffer(this._dataStreams, {
             maxSize: this._config.bufferSize || 0,
             timeout: this._config.bufferTimeout
         });
@@ -27,34 +28,34 @@ class AWSFirehoseProvider {
     }
 
     putCommand(commandData) {
-        return this.putEntity(AWSFirehoseProvider.COMMAND_GROUP, commandData);
+        return this._putEntity(AWSKinesisDataStreamsProvider.COMMAND_GROUP, commandData);
     }
 
     putNotification(notificationData) {
-        return this.putEntity(AWSFirehoseProvider.NOTIFICATION_GROUP, notificationData);
+        return this._putEntity(AWSKinesisDataStreamsProvider.NOTIFICATION_GROUP, notificationData);
     }
 
     putCommandUpdate(commandUpdateData) {
-        return this.putEntity(AWSFirehoseProvider.COMMAND_UPDATES_GROUP, commandUpdateData);
+        return this._putEntity(AWSKinesisDataStreamsProvider.COMMAND_UPDATES_GROUP, commandUpdateData);
     }
 
-    putEntity(groupName, data) {
+    _putEntity(groupName, data) {
         const streams = this._streamGroups.get(groupName) || [];
-        const puts = streams.map(s => this._config.buffering ? this._buffer.put(data, s) : this.put(data, s));
+        const puts = streams.map(s => this._config.buffering ? this._buffer.put(data, s) : this._put(data, s));
 
         return puts.length ? Promise.all(puts) : Promise.resolve(null);
     }
 
-    put(data, streamName) {
+    _put(data, streamName) {
+        const stringData = JSON.stringify(data);
         const record = {
-            DeliveryStreamName: streamName,
-            Record: {
-                Data: JSON.stringify(data)
-            }
+            StreamName: streamName,
+            Data: stringData,
+            PartitionKey: crc.crc32(stringData).toString(16)
         };
 
         return new Promise((resolve, reject) => {
-            this._firehose.putRecord(record, (err, response) => {
+            this._dataStreams.putRecord(record, (err, response) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -79,15 +80,15 @@ class AWSFirehoseProvider {
     }
 
     assignStreamsToCommands(...streamNames) {
-        return this._assignStreamsToGroup(AWSFirehoseProvider.COMMAND_GROUP, ...streamNames);
+        return this._assignStreamsToGroup(AWSKinesisDataStreamsProvider.COMMAND_GROUP, ...streamNames);
     }
 
     assignStreamsToNotifications(...streamNames) {
-        return this._assignStreamsToGroup(AWSFirehoseProvider.NOTIFICATION_GROUP, ...streamNames);
+        return this._assignStreamsToGroup(AWSKinesisDataStreamsProvider.NOTIFICATION_GROUP, ...streamNames);
     }
 
     assignStreamsToCommandUpdates(...streamNames) {
-        return this._assignStreamsToGroup(AWSFirehoseProvider.COMMAND_UPDATES_GROUP, ...streamNames);
+        return this._assignStreamsToGroup(AWSKinesisDataStreamsProvider.COMMAND_UPDATES_GROUP, ...streamNames);
     }
 
     _assignStreamsToGroup(group, ...streamNames) {
@@ -103,4 +104,4 @@ class AWSFirehoseProvider {
     static get COMMAND_UPDATES_GROUP() { return 'commandUpdates'; }
 }
 
-module.exports = AWSFirehoseProvider;
+module.exports = AWSKinesisDataStreamsProvider;

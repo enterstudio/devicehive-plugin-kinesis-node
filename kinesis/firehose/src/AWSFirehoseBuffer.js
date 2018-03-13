@@ -4,7 +4,7 @@ class AWSFirehoseBuffer extends EventEmitter {
     constructor(firehose, params) {
         super();
 
-        this._firehose = firehose;
+        this._streamProvider = firehose;
         this._params = params;
         this._messagesByStream = {};
         this._timeout = null;
@@ -44,7 +44,7 @@ class AWSFirehoseBuffer extends EventEmitter {
         });
 
         if (records.length) {
-            this._firehose.putRecordBatch({
+            this._streamProvider.putRecordBatch({
                 DeliveryStreamName: streamName,
                 Records: records
             }, (err, response) => {

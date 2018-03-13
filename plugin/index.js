@@ -1,7 +1,7 @@
 const { DeviceHivePlugin } = require(`devicehive-plugin-core`);
 
 const config = require(`./plugin-config`);
-const firehoseConfig = require(`./config`).firehose;
-const FirehosePluginService = require('./FirehosePluginService');
+const kinesisConfig = require(`./config`).kinesis;
+const KinesisPluginService = require('./KinesisPluginService');
 
-DeviceHivePlugin.start(new FirehosePluginService(firehoseConfig), config);
+DeviceHivePlugin.start(new KinesisPluginService(kinesisConfig), config);

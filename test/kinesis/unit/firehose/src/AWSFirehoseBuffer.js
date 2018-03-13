@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const FirehoseBuffer = require('../../../../firehose/src/AWSFirehoseBuffer');
+const FirehoseBuffer = require('../../../../../kinesis/firehose/src/AWSFirehoseBuffer');
 
 describe('AWS Firehose Buffer', () => {
     it('Should emit "putBatch" event when buffer has put records to Firehose as batch', () => {

@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const FirehoseProvider = require('../../../../firehose/src/AWSFirehoseProvider');
+const FirehoseProvider = require('../../../../../kinesis/firehose/src/AWSFirehoseProvider');
 
 const CONFIG = {
     buffering: false
@@ -23,14 +23,13 @@ describe('AWS Firehose Provider', () => {
         const data = {
             test: 'my test data'
         };
-
-        firehoseProvider.put(data, 'my-stream');
-
         const expectedRecord = {
             Data: '{"test":"my test data"}'
         };
-        assert(awsFirehoseStub.putRecord.calledOnce);
 
+        firehoseProvider.put(data, 'my-stream');
+
+        assert(awsFirehoseStub.putRecord.calledOnce);
         assert('Record' in awsFirehoseStub.putRecord.firstCall.args[0]);
         assert.deepEqual(awsFirehoseStub.putRecord.firstCall.args[0].Record, expectedRecord);
     });
