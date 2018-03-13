@@ -1,8 +1,13 @@
+const Buffer = require('./AWSFirehoseBuffer');
+
 class AWSFirehoseProvider {
     constructor(awsFirehose, config) {
         this._firehose = awsFirehose;
         this._config = JSON.parse(JSON.stringify(config));
         this._streamGroups = new Map();
+        this._buffer = new Buffer(this._firehose, {
+            maxSize: this._config.bufferSize || 0
+        });        
 
         if (Array.isArray(this._config.commandStreams)) {
             this.assignStreamsToCommands(this._config.commandStreams);
@@ -31,7 +36,7 @@ class AWSFirehoseProvider {
 
     putEntity(groupName, data) {
         const streams = this._streamGroups.get(groupName) || [];
-        const puts = streams.map(s => this.put(data, s));
+        const puts = streams.map(s => this._config.buffering ? this._buffer.put(data, s) : this.put(data, s));
 
         return puts.length ? Promise.all(puts) : Promise.resolve(null);
     }
