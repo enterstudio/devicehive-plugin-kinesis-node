@@ -77,7 +77,26 @@ describe('AWS Firehose Provider', () => {
         assert.equal(awsFirehoseStub.putRecord.thirdCall.args[0].DeliveryStreamName, 'command-update-stream-3');
     });
 
-    it('Should buffer messages and put as batch by riching specified size', () => {
+    it('Should execute callback on put', () => {
+        const data = {
+            test: 'test'
+        };
+        awsFirehoseStub.putRecord = sinon.stub().callsFake((params, callback) => {
+            const fakeErr = null;
+            const fakeResponse = {};
+            callback(fakeErr, fakeResponse);
+        });
+        firehoseProvider.assignStreamsToCommands('test');
+
+        const callback = sinon.spy();
+        firehoseProvider.onPut(callback);
+
+        firehoseProvider.putCommand(data);
+
+        assert(callback.calledWith(null, {}));
+    });
+
+    it('Should buffer messages and put as batch by reaching specified size', () => {
         const config = {
             buffering: true,
             bufferSize: 3

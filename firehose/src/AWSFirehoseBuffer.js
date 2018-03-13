@@ -1,5 +1,9 @@
-class AWSFirehoseBuffer {
+const EventEmitter = require('events');
+
+class AWSFirehoseBuffer extends EventEmitter {
     constructor(firehose, params) {
+        super();
+
         this._firehose = firehose;
         this._params = params;
         this._messagesByStream = {};
@@ -43,6 +47,8 @@ class AWSFirehoseBuffer {
             this._firehose.putRecordBatch({
                 DeliveryStreamName: streamName,
                 Records: records
+            }, (err, response) => {
+                this.emit('putBatch', err, response);
             });
 
             this._messagesByStream[streamName] = [];
