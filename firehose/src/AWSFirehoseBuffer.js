@@ -18,6 +18,8 @@ class AWSFirehoseBuffer {
         if (this._messagesByStream[streamName].length >= this._params.maxSize) {
             this._putBatchToStream(streamName);
         }
+
+        return Promise.resolve(null);
     }
 
     _initTimeout() {

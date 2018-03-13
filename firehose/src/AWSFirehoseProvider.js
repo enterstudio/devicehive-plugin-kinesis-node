@@ -6,7 +6,8 @@ class AWSFirehoseProvider {
         this._config = JSON.parse(JSON.stringify(config));
         this._streamGroups = new Map();
         this._buffer = new Buffer(this._firehose, {
-            maxSize: this._config.bufferSize || 0
+            maxSize: this._config.bufferSize || 0,
+            timeout: this._config.bufferTimeout
         });        
 
         if (Array.isArray(this._config.commandStreams)) {

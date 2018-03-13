@@ -7,6 +7,8 @@
 
   "custom": {
     "buffering": true,
+    "bufferSize": 10,
+    "bufferTimeout": 1000,
     "commandStreams": "",
     "notificationStreams": "",
     "commandUpdatesStreams": ""
