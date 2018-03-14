@@ -1,9 +1,11 @@
 const AWS = require('aws-sdk');
 const merge = require('lodash.merge');
+const debug = require('debug')('kinesisstreamprovider');
 
 const KinesisUtils = require('./lib/KinesisUtils');
 const AWSFirehoseProvider = require('./firehose');
 const AWSKinesisDataStreamsProvider = require('./dataStreams');
+const StreamProviderLogger = require('./src/StreamProviderLogger');
 
 const defaultConfig = require('./config');
 
@@ -28,6 +30,14 @@ module.exports = {
                 const awsKinesis = new AWS.Kinesis(config.aws);
                 provider = new AWSKinesisDataStreamsProvider(awsKinesis, config.custom);
                 break;
+        }
+
+        new StreamProviderLogger(debug).attach(provider);
+
+        if (provider.bufferingEnabled()) {
+            debug('Buffering is enabled');
+        } else {
+            debug('Buffering is disabled');
         }
 
         return provider;

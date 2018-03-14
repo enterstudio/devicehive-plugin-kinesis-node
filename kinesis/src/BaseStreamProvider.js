@@ -228,6 +228,10 @@ class BaseStreamProvider {
         throw new TypeError('_composeRecordData is not implemented');
     }
 
+    bufferingEnabled() {
+        return !!this._buffer;
+    }
+
     static get COMMAND_GROUP() { return 'commands'; }
     static get NOTIFICATION_GROUP() { return 'notifications'; }
     static get COMMAND_UPDATES_GROUP() { return 'commandUpdates'; }
