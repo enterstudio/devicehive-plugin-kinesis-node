@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const FirehoseProvider = require('../../../../firehose/src/AWSFirehoseProvider');
+const FirehoseProvider = require('../../../../../kinesis/firehose/src/AWSFirehoseProvider');
 
 const CONFIG = {
     buffering: false
@@ -17,22 +17,6 @@ describe('AWS Firehose Provider', () => {
             putRecordBatch: sinon.spy()
         };
         firehoseProvider = new FirehoseProvider(awsFirehoseStub, CONFIG);
-    });
-
-    it('Should put record in Firehose stream', () => {
-        const data = {
-            test: 'my test data'
-        };
-
-        firehoseProvider.put(data, 'my-stream');
-
-        const expectedRecord = {
-            Data: '{"test":"my test data"}'
-        };
-        assert(awsFirehoseStub.putRecord.calledOnce);
-
-        assert('Record' in awsFirehoseStub.putRecord.firstCall.args[0]);
-        assert.deepEqual(awsFirehoseStub.putRecord.firstCall.args[0].Record, expectedRecord);
     });
 
     it('Should put record in all Firehose streams assigned to commands group', () => {
