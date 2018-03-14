@@ -1,22 +1,30 @@
 const crc = require('crc');
 
 const BaseStreamProvider = require('../../src/BaseStreamProvider');
-const DataStreamsBuffer = require('./AWSKinesisDataStreamsBuffer');
 
 class AWSKinesisDataStreamsProvider extends BaseStreamProvider {
-    _streamBufferClass() {
-        return DataStreamsBuffer;
-    }
-
-    _request(data, streamName, callback = () => {}) {
-        const stringData = JSON.stringify(data);
-        const record = {
+    _request(data, streamName, callback = (err, response) => {}) {
+        const payload = {
             StreamName: streamName,
-            Data: stringData,
-            PartitionKey: crc.crc32(stringData).toString(16)
+            ...this.composeRecordData(data)
         };
 
-        return this._provider.putRecord(record, callback);
+        return this._provider.putRecord(payload, callback);
+    }
+
+    batchRequest(records, streamName, callback = (err, response) => {}) {
+        return this._provider.putRecords({
+            StreamName: streamName,
+            Records: records
+        }, callback);
+    }
+
+    composeRecordData(record) {
+        const data = JSON.stringify(record);
+        return {
+            Data: data,
+            PartitionKey: crc.crc32(data).toString(16)
+        };
     }
 }
 

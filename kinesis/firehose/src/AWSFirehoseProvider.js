@@ -1,19 +1,25 @@
 const BaseStreamProvider = require('../../src/BaseStreamProvider');
-const FirehoseBuffer = require('./AWSFirehoseBuffer');
 
 class AWSFirehoseProvider extends BaseStreamProvider {
-    _streamBufferClass() {
-        return FirehoseBuffer;
+    _request(record, streamName, callback = (err, response) => {}) {
+        const payload = {
+            DeliveryStreamName: streamName,
+            Record: this.composeRecordData(record)
+        };
+        return this._provider.putRecord(payload, callback);
     }
 
-    _request(data, streamName, callback = () => {}) {
-        const record = {
+    batchRequest(records, streamName, callback = () => {}) {
+        return this._provider.putRecordBatch({
             DeliveryStreamName: streamName,
-            Record: {
-                Data: JSON.stringify(data)
-            }
+            Records: records
+        }, callback);
+    }
+
+    composeRecordData(record) {
+        return {
+            Data: JSON.stringify(record)
         };
-        return this._provider.putRecord(record, callback);
     }
 }
 

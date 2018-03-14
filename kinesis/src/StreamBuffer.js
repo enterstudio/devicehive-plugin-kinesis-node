@@ -38,24 +38,16 @@ class BaseBuffer extends EventEmitter {
         const records = [];
 
         this._messagesByStream[streamName].forEach(record => {
-            records.push(this._composeRecordData(record));
+            records.push(this._provider.composeRecordData(record));
         });
 
         if (records.length) {
-            this._batchRequest(records, streamName, (err, response) => {
+            this._provider.batchRequest(records, streamName, (err, response) => {
                 this.emit('putBatch', err, response, streamName);
             });
 
             this._messagesByStream[streamName] = [];
         }
-    }
-
-    _composeRecordData(record) {
-        throw new TypeError('_composeRecordData is not implemented');
-    }
-
-    _batchRequest(records, streamName, callback = () => {}) {
-        throw new TypeError('_batchRequest is not implemented');
     }
 }
 

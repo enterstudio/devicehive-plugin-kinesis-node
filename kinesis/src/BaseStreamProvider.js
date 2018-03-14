@@ -1,5 +1,7 @@
 const EventEmitter = require('events');
 
+const  StreamBuffer = require('./StreamBuffer');
+
 class BaseStreamProvider {
     constructor(streamProvider, config) {
         this._provider = streamProvider;
@@ -22,19 +24,13 @@ class BaseStreamProvider {
     }
 
     _createBuffer() {
-        const StreamBuffer = this._streamBufferClass();
-
-        if (this._config.buffering && StreamBuffer) {
-            return new StreamBuffer(this._provider, {
+        if (this._config.buffering) {
+            return new StreamBuffer(this, {
                 maxSize: this._config.bufferSize || 0,
                 timeout: this._config.bufferTimeout
             });
         }
 
-        return null;
-    }
-
-    _streamBufferClass() {
         return null;
     }
 
@@ -71,8 +67,12 @@ class BaseStreamProvider {
         });
     }
 
-    _request(data, streamName, callback = () => {}) {
+    _request(data, streamName, callback = (err, response) => {}) {
         throw new TypeError('_request is not implemented');
+    }
+
+    batchRequest(records, streamName, callback = () => {}) {
+        throw new TypeError('batchRequest is not implemented');
     }
 
     onPut(callback) {
@@ -105,6 +105,10 @@ class BaseStreamProvider {
         this._streamGroups.set(group, names);
 
         return this;
+    }
+
+    composeRecordData(record) {
+        throw new TypeError('composeRecordData is not implemented');
     }
 
     static get COMMAND_GROUP() { return 'commands'; }
