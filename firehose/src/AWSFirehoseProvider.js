@@ -1,8 +1,17 @@
+const EventEmitter = require('events');
+
+const Buffer = require('./AWSFirehoseBuffer');
+
 class AWSFirehoseProvider {
     constructor(awsFirehose, config) {
         this._firehose = awsFirehose;
         this._config = JSON.parse(JSON.stringify(config));
         this._streamGroups = new Map();
+        this._buffer = new Buffer(this._firehose, {
+            maxSize: this._config.bufferSize || 0,
+            timeout: this._config.bufferTimeout
+        });
+        this._eventEmitter = new EventEmitter();
 
         if (Array.isArray(this._config.commandStreams)) {
             this.assignStreamsToCommands(this._config.commandStreams);
@@ -31,7 +40,7 @@ class AWSFirehoseProvider {
 
     putEntity(groupName, data) {
         const streams = this._streamGroups.get(groupName) || [];
-        const puts = streams.map(s => this.put(data, s));
+        const puts = streams.map(s => this._config.buffering ? this._buffer.put(data, s) : this.put(data, s));
 
         return puts.length ? Promise.all(puts) : Promise.resolve(null);
     }
@@ -51,8 +60,22 @@ class AWSFirehoseProvider {
                 } else {
                     resolve(response);
                 }
+
+                this._eventEmitter.emit('put', err, response, streamName);
             });
         });
+    }
+
+    onPut(callback) {
+        if (callback && typeof callback === 'function') {
+            if (this._config.buffering) {
+                this._buffer.on('putBatch', callback);
+            } else {
+                this._eventEmitter.on('put', callback);
+            }
+        }
+
+        return this;
     }
 
     assignStreamsToCommands(...streamNames) {

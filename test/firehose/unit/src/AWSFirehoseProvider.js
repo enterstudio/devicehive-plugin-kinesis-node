@@ -13,7 +13,8 @@ let firehoseProvider;
 describe('AWS Firehose Provider', () => {
     beforeEach(() => {
         awsFirehoseStub = {
-            putRecord: sinon.spy()
+            putRecord: sinon.spy(),
+            putRecordBatch: sinon.spy()
         };
         firehoseProvider = new FirehoseProvider(awsFirehoseStub, CONFIG);
     });
@@ -74,5 +75,64 @@ describe('AWS Firehose Provider', () => {
         assert.equal(awsFirehoseStub.putRecord.firstCall.args[0].DeliveryStreamName, 'command-update-stream-1');
         assert.equal(awsFirehoseStub.putRecord.secondCall.args[0].DeliveryStreamName, 'command-update-stream-2');
         assert.equal(awsFirehoseStub.putRecord.thirdCall.args[0].DeliveryStreamName, 'command-update-stream-3');
+    });
+
+    it('Should execute callback on put', () => {
+        const data = {
+            test: 'test'
+        };
+        awsFirehoseStub.putRecord = sinon.stub().callsFake((params, callback) => {
+            const fakeErr = null;
+            const fakeResponse = {};
+            callback(fakeErr, fakeResponse);
+        });
+        firehoseProvider.assignStreamsToCommands('test');
+
+        const callback = sinon.spy();
+        firehoseProvider.onPut(callback);
+
+        firehoseProvider.putCommand(data);
+
+        assert(callback.calledWith(null, {}, 'test'));
+    });
+
+    it('Should buffer messages and put as batch by reaching specified size', () => {
+        const config = {
+            buffering: true,
+            bufferSize: 3
+        };
+        const data = {
+            command: 'command name'
+        };
+        firehoseProvider = new FirehoseProvider(awsFirehoseStub, config).assignStreamsToCommands('command-stream');
+
+        firehoseProvider.putCommand(data);
+        firehoseProvider.putCommand(data);
+        firehoseProvider.putCommand(data);
+
+        assert(awsFirehoseStub.putRecordBatch.calledOnce);
+    });
+
+    it('Should buffer messages and put as batch by timeout', done => {
+        const config = {
+            buffering: true,
+            bufferTimeout: 10,
+            bufferSize: 1000
+        };
+        const data = {
+            command: 'command name'
+        };
+        firehoseProvider = new FirehoseProvider(awsFirehoseStub, config).assignStreamsToCommands('command-stream');
+
+        firehoseProvider.putCommand(data);
+        firehoseProvider.putCommand(data);
+        firehoseProvider.putCommand(data);
+
+        assert(awsFirehoseStub.putRecordBatch.notCalled);
+
+        setTimeout(() => {
+            assert(awsFirehoseStub.putRecordBatch.calledOnce);
+            done();
+        }, 10);
     });
 });
