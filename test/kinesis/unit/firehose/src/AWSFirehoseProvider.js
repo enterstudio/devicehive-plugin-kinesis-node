@@ -19,21 +19,6 @@ describe('AWS Firehose Provider', () => {
         firehoseProvider = new FirehoseProvider(awsFirehoseStub, CONFIG);
     });
 
-    it('Should put record in Firehose stream', () => {
-        const data = {
-            test: 'my test data'
-        };
-        const expectedRecord = {
-            Data: '{"test":"my test data"}'
-        };
-
-        firehoseProvider.put(data, 'my-stream');
-
-        assert(awsFirehoseStub.putRecord.calledOnce);
-        assert('Record' in awsFirehoseStub.putRecord.firstCall.args[0]);
-        assert.deepEqual(awsFirehoseStub.putRecord.firstCall.args[0].Record, expectedRecord);
-    });
-
     it('Should put record in all Firehose streams assigned to commands group', () => {
         const data = {
             command: 'command name'
