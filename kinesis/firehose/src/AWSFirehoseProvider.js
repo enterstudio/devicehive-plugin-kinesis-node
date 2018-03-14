@@ -4,19 +4,19 @@ class AWSFirehoseProvider extends BaseStreamProvider {
     _request(record, streamName, callback = (err, response) => {}) {
         const payload = {
             DeliveryStreamName: streamName,
-            Record: this.composeRecordData(record)
+            Record: this._composeRecordData(record)
         };
         return this._provider.putRecord(payload, callback);
     }
 
-    batchRequest(records, streamName, callback = () => {}) {
+    _batchRequest(records, streamName, callback = () => {}) {
         return this._provider.putRecordBatch({
             DeliveryStreamName: streamName,
             Records: records
         }, callback);
     }
 
-    composeRecordData(record) {
+    _composeRecordData(record) {
         return {
             Data: JSON.stringify(record)
         };

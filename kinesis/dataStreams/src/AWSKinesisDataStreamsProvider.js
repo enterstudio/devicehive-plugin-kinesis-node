@@ -6,20 +6,20 @@ class AWSKinesisDataStreamsProvider extends BaseStreamProvider {
     _request(data, streamName, callback = (err, response) => {}) {
         const payload = {
             StreamName: streamName,
-            ...this.composeRecordData(data)
+            ...this._composeRecordData(data)
         };
 
         return this._provider.putRecord(payload, callback);
     }
 
-    batchRequest(records, streamName, callback = (err, response) => {}) {
+    _batchRequest(records, streamName, callback = (err, response) => {}) {
         return this._provider.putRecords({
             StreamName: streamName,
             Records: records
         }, callback);
     }
 
-    composeRecordData(record) {
+    _composeRecordData(record) {
         const data = JSON.stringify(record);
         return {
             Data: data,
