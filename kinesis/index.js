@@ -8,6 +8,11 @@ const AWSKinesisDataStreamsProvider = require('./dataStreams');
 const defaultConfig = require('./config');
 
 module.exports = {
+    /**
+     * Create provider based on provider type defined in config
+     * @param {Object} userConfig
+     * @returns {BaseStreamProvider}
+     */
     createProvider(userConfig) {
         const config = merge({}, defaultConfig, userConfig);
         KinesisUtils.formatStreamGroups(config.custom);

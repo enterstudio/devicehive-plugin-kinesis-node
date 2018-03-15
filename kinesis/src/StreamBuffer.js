@@ -1,6 +1,11 @@
 const EventEmitter = require('events');
 
-class BaseBuffer extends EventEmitter {
+class StreamBuffer extends EventEmitter {
+    /**
+     * Constructs StreamBuffer instance
+     * @param {Number} params.timeout
+     * @param {Number} params.maxSize
+     */
     constructor(params) {
         super();
 
@@ -9,6 +14,12 @@ class BaseBuffer extends EventEmitter {
         this._timeout = null;
     }
 
+    /**
+     * Puts data to buffer
+     * @param {*} data
+     * @param {String} streamName
+     * @returns {Promise<null>}
+     */
     put(data, streamName) {
         this._initTimeout();
 
@@ -40,4 +51,4 @@ class BaseBuffer extends EventEmitter {
 }
 
 
-module.exports = BaseBuffer;
+module.exports = StreamBuffer;
