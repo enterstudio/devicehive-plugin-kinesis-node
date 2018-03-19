@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node ./plugin/index.js",
-    "test": "mocha --recursive --exit ./test/*/unit/**/*.js"
+    "test": "mocha --recursive --exit"
   },
   "repository": {
     "type": "git",
@@ -31,8 +31,7 @@
     "sinon": "^4.4.6"
   },
   "dependencies": {
-    "aws-sdk": "^2.209.0",
-    "crc": "^3.5.0",
+    "aws-sdk": "^2.211.0",
     "devicehive-plugin-core": "^1.1.2",
     "devicehive-proxy-message": "^1.0.11",
     "json-evn-configurator": "^1.0.6",

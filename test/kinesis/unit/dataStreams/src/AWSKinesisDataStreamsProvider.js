@@ -1,8 +1,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const crc = require('crc');
-
 const DataStreamsProvider = require('../../../../../kinesis/dataStreams/src/AWSKinesisDataStreamsProvider');
 
 const CONFIG = {
@@ -63,11 +61,11 @@ describe('AWS Kinesis Data Streams Provider', () => {
         assert.equal(awsKinesisStub.putRecord.thirdCall.args[0].StreamName, 'command-update-stream-3');
     });
 
-    it('Should use CRC32 as PartitionKey', () => {
+    it('Should use MD5 as PartitionKey', () => {
         const data = {
             command: 'command name'
         };
-        const expected = crc.crc32(JSON.stringify(data)).toString(16);
+        const expected = require('crypto').createHash('md5').update(JSON.stringify(data)).digest('hex');
         dataStreamsProvider.assignStreamsToCommands('commands');
 
         dataStreamsProvider.putCommand(data);

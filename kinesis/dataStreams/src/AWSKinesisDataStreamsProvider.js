@@ -1,5 +1,3 @@
-const crc = require('crc');
-
 const BaseStreamProvider = require('../../src/BaseStreamProvider');
 
 class AWSKinesisDataStreamsProvider extends BaseStreamProvider {
@@ -23,7 +21,7 @@ class AWSKinesisDataStreamsProvider extends BaseStreamProvider {
         const data = JSON.stringify(record);
         return {
             Data: data,
-            PartitionKey: crc.crc32(data).toString(16)
+            PartitionKey: require('crypto').createHash('md5').update(data).digest('hex')
         };
     }
 }
