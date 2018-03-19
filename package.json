@@ -1,0 +1,42 @@
+{
+  "name": "devicehive-plugin-firehose-node",
+  "version": "1.0.0",
+  "description": "DeviceHive plugin for streaming data to AWS Firehose",
+  "main": "./plugin/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node ./plugin/index.js",
+    "test": "./node_modules/.bin/mocha --recursive --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devicehive/devicehive-plugin-firehose-node.git"
+  },
+  "keywords": [
+    "DeviceHive",
+    "firehose",
+    "aws",
+    "kinesis"
+  ],
+  "author": "Alexei Torunov",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/devicehive/devicehive-plugin-firehose-node/issues"
+  },
+  "homepage": "https://github.com/devicehive/devicehive-plugin-firehose-node#readme",
+  "devDependencies": {
+    "mocha": "^5.0.4",
+    "sinon": "^4.4.6"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.211.0",
+    "devicehive-plugin-core": "^1.1.2",
+    "debug": "^3.1.0",
+    "aws-sdk": "^2.205.0",
+    "devicehive-proxy-message": "^1.0.11",
+    "json-evn-configurator": "^1.0.6",
+    "lodash.merge": "^4.6.1"
+  }
+}

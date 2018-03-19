@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  kinesis-plugin:
+    build: .
+    env_file:
+      - .env
